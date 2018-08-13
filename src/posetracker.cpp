@@ -339,6 +339,19 @@ inline double getHubberMonoWeight(double SqErr,double Information){
     }
 
     bool MarkerPoseTracker::estimatePose(Marker& m, const CameraParameters& _cam_params, float _msize,
+                                         cv::Mat rvec, float minerrorRatio)
+    {
+        _rvec = rvec;
+        __aruco_solve_pnp(Marker::get3DPoints(_msize), m, _cam_params.CameraMatrix, _cam_params.Distorsion, _rvec,  _tvec);
+        
+        _rvec.convertTo(m.Rvec,CV_32F);
+        _tvec.convertTo(m.Tvec,CV_32F);
+        m.ssize = _msize;
+        return true;
+
+    }
+
+    bool MarkerPoseTracker::estimatePose(Marker& m, const CameraParameters& _cam_params, float _msize,
                                          float minerrorRatio)
     {
         if (_rvec.empty())

@@ -79,6 +79,8 @@ namespace aruco
          */
         bool estimatePose(Marker& m, const CameraParameters& cam_params, float markerSize, float minErrorRatio = 10 /*tau_e in paper*/);
 
+        bool estimatePose(Marker& m, const CameraParameters& cam_params, float markerSize, cv::Mat rvec,float minErrorRatio = 10 /*tau_e in paper*/);
+
         // returns the 4x4 transform matrix. Returns an empty matrix if last call to estimatePose returned false
         cv::Mat getRTMatrix() const;
         // return the rotation vector. Returns an empty matrix if last call to estimatePose returned false
