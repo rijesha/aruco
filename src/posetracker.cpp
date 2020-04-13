@@ -29,7 +29,7 @@ or implied, of Rafael Muñoz Salinas.
 #include "posetracker.h"
 #include "ippe.h"
 #include <set>
-#include "levmarq.h"
+#include "levmarq.h" //solve pnp of opencv is not trustworthy. Create our own
 #include <opencv2/calib3d/calib3d.hpp>
 namespace aruco
 {
@@ -261,6 +261,7 @@ inline double hubberMono(double e){
 inline double getHubberMonoWeight(double SqErr,double Information){
      return sqrt(hubberMono(Information * SqErr)/ SqErr);
 }
+
     template <typename T>
     double __aruco_solve_pnp(const std::vector<cv::Point3f>& p3d, const std::vector<cv::Point2f>& p2d,
                              const cv::Mat& cam_matrix, const cv::Mat& dist, cv::Mat& r_io, cv::Mat& t_io)
@@ -327,28 +328,22 @@ inline double getHubberMonoWeight(double SqErr,double Information){
         fromSol(sol, r_io, t_io);
         return err;
     }
-
-    double __aruco_solve_pnp(const std::vector<cv::Point3f>& p3d, const std::vector<cv::Point2f>& p2d,
+     double __aruco_solve_pnp(const std::vector<cv::Point3f>& p3d, const std::vector<cv::Point2f>& p2d,
                              const cv::Mat& cam_matrix, const cv::Mat& dist, cv::Mat& r_io, cv::Mat& t_io)
     {
-#ifdef DOUBLE_PRECISION_PNP
-        return __aruco_solve_pnp<double>(p3d, p2d, cam_matrix, dist, r_io, t_io);
-#else
+//        #if  CV_MAJOR_VERSION >= 3
+
+//        double d=cv::solvePnP(p3d,p2d,cam_matrix,dist,r_io,t_io);
+//        if(r_io.type()==CV_64F) r_io.convertTo(r_io,CV_32F);
+//        if(t_io.type()==CV_64F) t_io.convertTo(t_io,CV_32F);
+
+//#else
+//#ifdef DOUBLE_PRECISION_PNP
+//        return __aruco_solve_pnp<double>(p3d, p2d, cam_matrix, dist, r_io, t_io);
+//#else
         return __aruco_solve_pnp<float>(p3d, p2d, cam_matrix, dist, r_io, t_io);
-#endif
-    }
-
-    bool MarkerPoseTracker::estimatePose(Marker& m, const CameraParameters& _cam_params, float _msize,
-                                         cv::Mat rvec, float minerrorRatio)
-    {
-        _rvec = rvec;
-        __aruco_solve_pnp(Marker::get3DPoints(_msize), m, _cam_params.CameraMatrix, _cam_params.Distorsion, _rvec,  _tvec);
-        
-        _rvec.convertTo(m.Rvec,CV_32F);
-        _tvec.convertTo(m.Tvec,CV_32F);
-        m.ssize = _msize;
-        return true;
-
+//#endif
+//#endif
     }
 
     bool MarkerPoseTracker::estimatePose(Marker& m, const CameraParameters& _cam_params, float _msize,
@@ -360,11 +355,6 @@ inline double getHubberMonoWeight(double SqErr,double Information){
             auto solutions =  solvePnP_(Marker::get3DPoints(_msize), m, _cam_params.CameraMatrix, _cam_params.Distorsion);
             double errorRatio = solutions[1].second / solutions[0].second;
             if (errorRatio < minerrorRatio)
-                return false;  // is te error ratio big enough
-//            cv::solvePnP(Marker::get3DPoints(_msize), m, _cam_params.CameraMatrix, _cam_params.Distorsion, rv, tv);
-            //__aruco_solve_pnp(Marker::get3DPoints(_msize), m, _cam_params.CameraMatrix, _cam_params.Distorsion, _rvec,  _tvec);
-//            rv.convertTo(_rvec, CV_32F);
-//            tv.convertTo(_tvec, CV_32F);
             aruco_private::impl__aruco_getRTfromMatrix44(solutions[0].first, _rvec, _tvec);
         }
         else
@@ -531,6 +521,7 @@ inline double getHubberMonoWeight(double SqErr,double Information){
             }
 
             //refine
+
             __aruco_solve_pnp(p3d, p2d, _cam_params.CameraMatrix, _cam_params.Distorsion, _rvec, _tvec);
 
             //check distance and rotation difference

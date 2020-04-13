@@ -37,11 +37,7 @@ or implied, of Rafael Muñoz Salinas.
 #include <sstream>
 #include "aruco.h"
 #include "aruco_calibration_grid_board_a4.h"
-#if WIN32
-#include <win_dirent.h>
-#else
-#include <dirent.h>
-#endif
+#include "dirreader.h"
 #include <stdexcept>
 
 using namespace std;
@@ -96,19 +92,7 @@ class CmdLineParser
 
 
 
-vector<string> readDir(string path){
-    DIR *dir;
-    struct dirent *ent;
-    vector<string>  res;
-    if ((dir = opendir (path.c_str())) != NULL) {
-      /* print all the files and directories within directory */
-      while ((ent = readdir (dir)) != NULL)
-          res.push_back(path+string("/")+string(ent->d_name));
-      closedir (dir);
-    }
-    //check
-    return res;
-}
+
 
 /************************************
  *
@@ -159,7 +143,7 @@ int main(int argc, char** argv)
         // set specific parameters for this configuration
          TheMarkerDetector.setDictionary(TheMarkerMapConfig.getDictionary());
 
-        vector<string> images=readDir(argv[2]);
+        vector<string> images=DirReader::read(argv[2],"",DirReader::Params(true));
         for(auto i:images)cout<<i<<endl;
         if (images.size()==0)throw std::runtime_error("Could not find a file in the speficied path");
         cv::Size imageSize(-1, -1);
@@ -234,7 +218,21 @@ int main(int argc, char** argv)
 
 
         camp.saveToFile(TheOutFile);
+        
         cerr << "File saved in :" << TheOutFile << endl;
+        //print locations
+        cout<<"TYPE="<<(vr[0].type()==CV_64F)<<endl;
+        cout<<	"std::vector<cv::Mat> vr;"<<endl;
+        for(size_t i=0;i<vr.size();i++){
+			double *ptr=vr[i].ptr<double>(0);
+			cout<<"rv.push_back( (cv::Mat_<double>(3,1) << "<<ptr[0]<< ","<<ptr[1]<<","<<ptr[2]<<"));"<<endl;
+		}
+		
+        cout<<	"std::vector<cv::Mat> vt;"<<endl;
+        for(size_t i=0;i<vr.size();i++){
+			double *ptr=vt[i].ptr<double>(0);
+			cout<<"vt.push_back( (cv::Mat_<double>(3,1) << "<<ptr[0]<< ","<<ptr[1]<<","<<ptr[2]<<"));"<<endl;
+		}
     }
     catch (std::exception& ex)
 

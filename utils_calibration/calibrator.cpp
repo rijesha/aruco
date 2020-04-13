@@ -26,9 +26,7 @@ authors and should not be interpreted as representing official policies, either 
 or implied, of Rafael Muñoz Salinas.
 */
 
-#include "markermap.h"
 #include "calibrator.h"
-#include "levmarq.h"
 #include <opencv2/calib3d/calib3d.hpp>
 using namespace std;
 namespace aruco{
@@ -206,7 +204,7 @@ float Calibrator::cameraCalibrate(std::vector<std::vector<aruco::Marker> >  &all
         //first time
          iocam.CamSize = cv::Size(imageWidth,imageHeight);
     }
-    else calibflags=    CV_CALIB_USE_INTRINSIC_GUESS;
+    else calibflags=    cv::CALIB_USE_INTRINSIC_GUESS;
 
 
 

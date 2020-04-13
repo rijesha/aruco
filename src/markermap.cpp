@@ -461,6 +461,8 @@ Marker3DInfo::Marker3DInfo(int _id):id(_id){}
         {  // no points in the vector
             cv::solvePnPRansac(p3d, p2d, CameraMatrix, Distorsion, rvec, tvec);
         }
+        if(rvec.type()==CV_64F) rvec.convertTo(rvec,CV_64F);
+        if(tvec.type()==CV_64F) tvec.convertTo(tvec,CV_64F);
         return make_pair(rvec, tvec);
     }
 };

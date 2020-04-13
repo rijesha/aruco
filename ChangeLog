@@ -1,3 +1,43 @@
+Version 3.1.11
+- Added -latomic linking in arm6,7 (mainly for raspbian, because opencv is not adding it)
+- Removed highgui headers in core library
+Version 3.1.10
+- Solved unitialized variable in fractalposetracker.cpp
+Version 3.1.9
+- Solved windows compiling issues and some bugs
+Version 3.1.8
+- Solved bug in Fractal Marker
+Version 3.1.7
+- Solved bug in Fractal Marker
+Verion 3.1.6
+- Adapted to compile in OpenCv4.1.1
+Version 3.1.5
+- IPPE now in latest version. Corrected problems with data types
+Version 3.1.4
+- Bug in solvePnp corrected. It seems that OpenCv solvePnp still unreliable. Use our own exclusively
+Version 3.1.3
+- Bug in IPPE corrected. Back to old version
+Version 3.1.2
+- Windows compilation problems corrected
+Version 3.1.1
+- Fractal markers finally integrated
+Version 3.1.0
+- Updated to work with OpenCv 4.x
+- Fractal markers added (optional and not public yet)
+Version 3.0.13
+- Change in the License.
+- Removed CV_AA to avoid compilation problems in some OpenCV versions
+- Removed cv::Mat()=0 to allow compilation with opencv 2.4x
+Version 3.0.12
+- Corrected bug in utils_calibration/dirreader.h.
+- Added cpack to generate debian package
+Version 3.0.11
+- Conditional addition of levmarq file. Only required in OpenCv < 3.0
+Version 3.0.10
+- Corrected bug in utils/aruco_test so that custom dictionaries can be employed
+
+Version 3.0.9
+    - Addded old style opencv2/xx/xx.hpp headers to compile with 2.4.9 which is default in 16.04
 Version 3.0.8
     - Changed CameraParameters::operator<< to output xml files
     - Corrected bug in arucoConfig.cmake in windows systems that ffected to integration of aruco in other projects
