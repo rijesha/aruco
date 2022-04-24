@@ -2,11 +2,16 @@ INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/src)
 if(CMAKE_COMPILER_IS_GNUCXX OR MINGW OR ${CMAKE_CXX_COMPILER_ID} STREQUAL Clang)
 SET(THREADLIB "pthread")
 ENDIF()
+SET(ARUCO_INCLUDE_DIRS ${CMAKE_CURRENT_SOURCE_DIR}/../../../third_party/aruco/src/ )
+include_directories(${ARUCO_INCLUDE_DIRS})
+message(STATUS "ARUCO_INCLUDE_DIRS, version: ${ARUCO_INCLUDE_DIRS}")
+
+
 add_executable(aruco_calibration aruco_calibration.cpp calibrator.h calibrator.cpp )
 add_executable(aruco_calibration_fromimages aruco_calibration_fromimages.cpp dirreader.h)
 
-target_link_libraries(aruco_calibration             aruco opencv_calib3d opencv_highgui ${THREADLIB})
-target_link_libraries(aruco_calibration_fromimages  aruco opencv_calib3d opencv_highgui ${THREADLIB})
+target_link_libraries(aruco_calibration           PUBLIC  aruco opencv_calib3d opencv_highgui ${THREADLIB})
+target_link_libraries(aruco_calibration_fromimages  PUBLIC aruco opencv_calib3d opencv_highgui ${THREADLIB})
 
 install(TARGETS      aruco_calibration aruco_calibration_fromimages  RUNTIME DESTINATION bin)
 
